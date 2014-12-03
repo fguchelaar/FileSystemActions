@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\ActionConfigCollection.cs" />
+    <Compile Include="Watcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Config\WatcherConfig.cs" />
     <Compile Include="Config\WatchersConfiguration.cs" />
