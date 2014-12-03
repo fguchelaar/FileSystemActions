@@ -8,11 +8,14 @@ Provides a configurable Windows Service leveraging the FileSystemWatcher, to per
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
 <watchers>
-  <watcher>
+  <watcher path="c:\Temp">
     <action event="onCreated" command="onCreated.bat" />
     <action event="onChanged" command="onChanged.bat" />
   </watcher>
-  <watcher>
+  <watcher path="c:\Temp">
+    <action event="onChanged" command="onChangedAgain.bat" />
+  </watcher>
+  <watcher path="c:\Temp" filter="readme.*">
     <action event="onRenamed" command="onRenamed.bat" />
     <action event="onDeleted" command="onDeleted.bat" />
   </watcher>
