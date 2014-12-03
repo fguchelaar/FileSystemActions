@@ -1,12 +1,4 @@
-FileSystemActions
-=================
-
-Provides a configurable Windows Service leveraging the FileSystemWatcher, to perform actions when a directory or file is created, changed, renamed or deleted.
-
-#Configuration example
-
-```xml
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <watchers>
   <watcher>
     <action event="onCreated" command="onCreated.bat" />
@@ -17,4 +9,3 @@ Provides a configurable Windows Service leveraging the FileSystemWatcher, to per
     <action event="onDeleted" command="onDeleted.bat" />
   </watcher>
 </watchers>
-```
