@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using FSWActions.Core.Config;
 
@@ -49,13 +50,18 @@ namespace FSWActions.Core
 
         private static void ProcessRenamedEvent(RenamedEventArgs renamedEventArgs, ActionConfig actionConfig)
         {
-            Console.WriteLine("[{0}] Action: {1}-{2}", renamedEventArgs.ChangeType, actionConfig.Event, actionConfig.Command);
+            Console.WriteLine("[{0}] Command: {1}", renamedEventArgs.ChangeType, actionConfig.Command);
+
+            ProcessStartInfo processStartInfo = new ProcessStartInfo(actionConfig.Command);
+            Process.Start(processStartInfo);
         }
 
         private static void ProcessEvent(FileSystemEventArgs fileSystemEventArgs, ActionConfig actionConfig)
         {
-            Console.WriteLine("[{0}] Action: {1}-{2}", fileSystemEventArgs.ChangeType, actionConfig.Event, actionConfig.Command);
-        }
+            Console.WriteLine("[{0}] Command: {1}", fileSystemEventArgs.ChangeType, actionConfig.Command);
 
+            ProcessStartInfo processStartInfo = new ProcessStartInfo(actionConfig.Command);
+            Process.Start(processStartInfo);
+        }
     }
 }

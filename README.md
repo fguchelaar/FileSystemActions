@@ -21,3 +21,11 @@ Provides a configurable Windows Service leveraging the FileSystemWatcher, to per
   </watcher>
 </watchers>
 ```
+
+##Valid event values
+```
+onCreated
+onChanged
+onRenamed
+onDeleted
+```
