@@ -10,9 +10,9 @@ namespace FSWActions.Core
     {
         private WatcherConfig Config { get; set; }
 
-        public FileSystemWatcher FileSystemWatcher { get; set; }
+        private FileSystemWatcher FileSystemWatcher { get; set; }
 
-        public IDictionary<string, long> LastWriteTimeDict { get; set; }
+        private IDictionary<string, long> LastWriteTimeDict { get; set; }
 
         public Watcher(WatcherConfig config)
         {
