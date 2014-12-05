@@ -68,12 +68,12 @@ namespace FSWActions.Core
             long cachedLastWriteTime;
             if (!LastWriteTimeDict.TryGetValue(fileSystemEventArgs.FullPath, out cachedLastWriteTime) || cachedLastWriteTime != lastWriteTime)
             {
+                LastWriteTimeDict[fileSystemEventArgs.FullPath] = lastWriteTime;
+
                 Console.WriteLine("[{0}] Command: {1}", fileSystemEventArgs.ChangeType, actionConfig.Command);
                 ProcessStartInfo processStartInfo = new ProcessStartInfo(actionConfig.Command);
                 Process.Start(processStartInfo);
             }
-
-            LastWriteTimeDict[fileSystemEventArgs.FullPath] = lastWriteTime;
         }
     }
 }
