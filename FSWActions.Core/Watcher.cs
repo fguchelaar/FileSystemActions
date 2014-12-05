@@ -10,6 +10,8 @@ namespace FSWActions.Core
     {
         private WatcherConfig Config { get; set; }
 
+        public FileSystemWatcher FileSystemWatcher { get; set; }
+
         public IDictionary<string, long> LastWriteTimeDict { get; set; }
 
         public Watcher(WatcherConfig config)
@@ -20,11 +22,11 @@ namespace FSWActions.Core
 
         public void StartWatching()
         {
-            FileSystemWatcher fileSystemWatcher = new FileSystemWatcher(Config.Path);
+            FileSystemWatcher = new FileSystemWatcher(Config.Path);
 
             if (!string.IsNullOrEmpty(Config.Filter))
             {
-                fileSystemWatcher.Filter = Config.Filter;
+                FileSystemWatcher.Filter = Config.Filter;
             }
 
             foreach (ActionConfig actionConfig in Config.ActionsConfig)
@@ -32,24 +34,30 @@ namespace FSWActions.Core
                 ActionConfig config = actionConfig;
                 if (string.Equals(actionConfig.Event, "onCreated"))
                 {
-                    fileSystemWatcher.Created += (sender, args) => ProcessEvent(args, config);
+                    FileSystemWatcher.Created += (sender, args) => ProcessEvent(args, config);
                 }
                 else if (string.Equals(actionConfig.Event, "onChanged"))
                 {
-                    fileSystemWatcher.Changed += (sender, args) => ProcessEvent(args, config);
+                    FileSystemWatcher.Changed += (sender, args) => ProcessEvent(args, config);
                 }
                 else if (string.Equals(actionConfig.Event, "onRenamed"))
                 {
-                    fileSystemWatcher.Renamed += (sender, args) => ProcessRenamedEvent(args, config);
+                    FileSystemWatcher.Renamed += (sender, args) => ProcessRenamedEvent(args, config);
                 }
                 else if (string.Equals(actionConfig.Event, "onDeleted"))
                 {
-                    fileSystemWatcher.Deleted += (sender, args) => ProcessEvent(args, config);
+                    FileSystemWatcher.Deleted += (sender, args) => ProcessEvent(args, config);
                 }
             }
 
-            fileSystemWatcher.EnableRaisingEvents = true;
+            FileSystemWatcher.EnableRaisingEvents = true;
             Console.WriteLine("Started watching '{0}'", Config.Path);
+        }
+
+        public void StopWatching()
+        {
+            FileSystemWatcher.EnableRaisingEvents = false;
+            Console.WriteLine("Stopped watching '{0}'", Config.Path);
         }
 
         private static void ProcessRenamedEvent(RenamedEventArgs renamedEventArgs, ActionConfig actionConfig)
