@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using FSWActions.Core.Config;
@@ -9,9 +10,12 @@ namespace FSWActions.Core
     {
         private WatcherConfig Config { get; set; }
 
+        public IDictionary<string, long> LastWriteTimeDict { get; set; }
+
         public Watcher(WatcherConfig config)
         {
             Config = config;
+            LastWriteTimeDict = new Dictionary<string, long>();
         }
 
         public void StartWatching()
@@ -56,12 +60,20 @@ namespace FSWActions.Core
             Process.Start(processStartInfo);
         }
 
-        private static void ProcessEvent(FileSystemEventArgs fileSystemEventArgs, ActionConfig actionConfig)
+        private void ProcessEvent(FileSystemEventArgs fileSystemEventArgs, ActionConfig actionConfig)
         {
-            Console.WriteLine("[{0}] Command: {1}", fileSystemEventArgs.ChangeType, actionConfig.Command);
+            FileInfo fileInfo = new FileInfo(fileSystemEventArgs.FullPath);
+            long lastWriteTime = fileInfo.LastWriteTimeUtc.Ticks;
 
-            ProcessStartInfo processStartInfo = new ProcessStartInfo(actionConfig.Command);
-            Process.Start(processStartInfo);
+            long cachedLastWriteTime;
+            if (!LastWriteTimeDict.TryGetValue(fileSystemEventArgs.FullPath, out cachedLastWriteTime) || cachedLastWriteTime != lastWriteTime)
+            {
+                Console.WriteLine("[{0}] Command: {1}", fileSystemEventArgs.ChangeType, actionConfig.Command);
+                ProcessStartInfo processStartInfo = new ProcessStartInfo(actionConfig.Command);
+                Process.Start(processStartInfo);
+            }
+
+            LastWriteTimeDict[fileSystemEventArgs.FullPath] = lastWriteTime;
         }
     }
 }
