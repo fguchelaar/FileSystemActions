@@ -2,23 +2,23 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Timers;
 using FSWActions.Core.Config;
 
 namespace FSWActions.Core
 {
     public class Watcher
     {
-        private WatcherConfig Config { get; set; }
-
-        private FileSystemWatcher FileSystemWatcher { get; set; }
-
-        private IDictionary<string, long> LastWriteTimeDict { get; set; }
-
         public Watcher(WatcherConfig config)
         {
             Config = config;
             LastWriteTimeDict = new Dictionary<string, long>();
         }
+
+        private WatcherConfig Config { get; set; }
+        private FileSystemWatcher FileSystemWatcher { get; set; }
+        private IDictionary<string, long> LastWriteTimeDict { get; set; }
+        private Dictionary<string, Timer> DebounceTimers { get; set; }
 
         public void StartWatching()
         {
@@ -29,29 +29,34 @@ namespace FSWActions.Core
                 FileSystemWatcher.Filter = Config.Filter;
             }
 
-            foreach (ActionConfig actionConfig in Config.ActionsConfig)
+            foreach (var actionConfig in Config.ActionsConfig)
             {
-                ActionConfig config = actionConfig;
+                var config = actionConfig;
                 if (string.Equals(actionConfig.Event, "onCreated"))
                 {
-                    FileSystemWatcher.Created += (sender, args) => ProcessEvent(args, config);
+                    FileSystemWatcher.Created +=
+                        (sender, args) => Debounce(args.FullPath, delegate { ProcessEvent(args, config); });
                 }
                 else if (string.Equals(actionConfig.Event, "onChanged"))
                 {
-                    FileSystemWatcher.Changed += (sender, args) => ProcessEvent(args, config);
+                    FileSystemWatcher.Changed +=
+                        (sender, args) => Debounce(args.FullPath, delegate { ProcessEvent(args, config); });
                 }
                 else if (string.Equals(actionConfig.Event, "onRenamed"))
                 {
-                    FileSystemWatcher.Renamed += (sender, args) => ProcessRenamedEvent(args, config);
+                    FileSystemWatcher.Renamed +=
+                        (sender, args) => Debounce(args.FullPath, delegate { ProcessRenamedEvent(args, config); });
                 }
                 else if (string.Equals(actionConfig.Event, "onDeleted"))
                 {
-                    FileSystemWatcher.Deleted += (sender, args) => ProcessEvent(args, config);
+                    FileSystemWatcher.Deleted +=
+                        (sender, args) => Debounce(args.FullPath, delegate { ProcessEvent(args, config); });
                 }
             }
 
             FileSystemWatcher.EnableRaisingEvents = true;
-            Console.WriteLine("Started watching '{0}'", Config.Path);
+            Console.WriteLine("Started watching '{0}'{1}", Config.Path,
+                Config.Timeout != 0 ? string.Format(" timeout={0}", Config.Timeout) : string.Empty);
         }
 
         public void StopWatching()
@@ -60,28 +65,48 @@ namespace FSWActions.Core
             Console.WriteLine("Stopped watching '{0}'", Config.Path);
         }
 
-        private static void ProcessRenamedEvent(RenamedEventArgs renamedEventArgs, ActionConfig actionConfig)
+        private void Debounce(string key, Action action)
+        {
+            if (Config.Timeout <= 0)
+            {
+                action();
+                return;
+            }
+            if (DebounceTimers == null) DebounceTimers = new Dictionary<string, Timer>();
+
+            if (DebounceTimers.ContainsKey(key))
+            {
+                DebounceTimers[key].Stop();
+                DebounceTimers.Remove(key);
+                Console.WriteLine("Cleared action for '{0}'", key);
+            }
+
+            var t = new Timer(Config.Timeout);
+            t.Elapsed += delegate
+            {
+                t.Stop();
+                DebounceTimers.Remove(key);
+                action();
+            };
+            DebounceTimers.Add(key, t);
+            t.Start();
+
+            Console.WriteLine("Scheduled action for '{0}' after {1}", key, Config.Timeout);
+        }
+
+        private void ProcessRenamedEvent(RenamedEventArgs renamedEventArgs, ActionConfig actionConfig)
         {
             Console.WriteLine("[{0}] Command: {1}", renamedEventArgs.ChangeType, actionConfig.Command);
 
-            ProcessStartInfo processStartInfo = new ProcessStartInfo(actionConfig.Command);
+            var processStartInfo = new ProcessStartInfo(actionConfig.Command);
             Process.Start(processStartInfo);
         }
 
         private void ProcessEvent(FileSystemEventArgs fileSystemEventArgs, ActionConfig actionConfig)
         {
-            FileInfo fileInfo = new FileInfo(fileSystemEventArgs.FullPath);
-            long lastWriteTime = fileInfo.LastWriteTimeUtc.Ticks;
-
-            long cachedLastWriteTime;
-            if (!LastWriteTimeDict.TryGetValue(fileSystemEventArgs.FullPath, out cachedLastWriteTime) || cachedLastWriteTime != lastWriteTime)
-            {
-                LastWriteTimeDict[fileSystemEventArgs.FullPath] = lastWriteTime;
-
-                Console.WriteLine("[{0}] Command: {1}", fileSystemEventArgs.ChangeType, actionConfig.Command);
-                ProcessStartInfo processStartInfo = new ProcessStartInfo(actionConfig.Command);
-                Process.Start(processStartInfo);
-            }
+            Console.WriteLine("[{0}] Command: {1}", fileSystemEventArgs.ChangeType, actionConfig.Command);
+            var processStartInfo = new ProcessStartInfo(actionConfig.Command);
+            Process.Start(processStartInfo);
         }
     }
 }
