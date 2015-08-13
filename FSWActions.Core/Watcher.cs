@@ -78,7 +78,6 @@ namespace FSWActions.Core
             {
                 DebounceTimers[key].Stop();
                 DebounceTimers.Remove(key);
-                Console.WriteLine("Cleared action for '{0}'", key);
             }
 
             var t = new Timer(Config.Timeout);
@@ -90,8 +89,6 @@ namespace FSWActions.Core
             };
             DebounceTimers.Add(key, t);
             t.Start();
-
-            Console.WriteLine("Scheduled action for '{0}' after {1}", key, Config.Timeout);
         }
 
         private void ProcessRenamedEvent(RenamedEventArgs renamedEventArgs, ActionConfig actionConfig)
