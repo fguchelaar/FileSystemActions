@@ -11,6 +11,9 @@ namespace FSWActions.Core.Config
         [XmlAttribute("filter")]
         public string Filter { get; set; }
 
+        [XmlAttribute("timeout")]
+        public int Timeout { get; set; }
+
         [XmlElement("action")]
         public ActionConfigCollection ActionsConfig { get; set; }
     }
