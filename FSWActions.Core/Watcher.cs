@@ -12,13 +12,11 @@ namespace FSWActions.Core
         public Watcher(WatcherConfig config)
         {
             Config = config;
-            LastWriteTimeDict = new Dictionary<string, long>();
         }
 
         private WatcherConfig Config { get; set; }
         private FileSystemWatcher FileSystemWatcher { get; set; }
-        private IDictionary<string, long> LastWriteTimeDict { get; set; }
-        private Dictionary<string, Timer> DebounceTimers { get; set; }
+        private IDictionary<string, Timer> DebounceTimers { get; set; }
 
         public void StartWatching()
         {
@@ -80,15 +78,14 @@ namespace FSWActions.Core
                 DebounceTimers.Remove(key);
             }
 
-            var t = new Timer(Config.Timeout);
-            t.Elapsed += delegate
+            var debounceTimer = new Timer(Config.Timeout) {AutoReset = false};
+            debounceTimer.Elapsed += delegate
             {
-                t.Stop();
                 DebounceTimers.Remove(key);
                 action();
             };
-            DebounceTimers.Add(key, t);
-            t.Start();
+            DebounceTimers.Add(key, debounceTimer);
+            debounceTimer.Start();
         }
 
         private void ProcessRenamedEvent(RenamedEventArgs renamedEventArgs, ActionConfig actionConfig)
