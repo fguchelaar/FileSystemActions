@@ -98,14 +98,20 @@ namespace FSWActions.Core
         {
             Console.WriteLine("[{0}] Command: {1}", renamedEventArgs.ChangeType, actionConfig.Command);
 
-            var processStartInfo = new ProcessStartInfo(actionConfig.Command);
+            var processStartInfo = new ProcessStartInfo(actionConfig.Command)
+            {
+                WorkingDirectory = new FileInfo(actionConfig.Command).DirectoryName
+            };
             Process.Start(processStartInfo);
         }
 
         private void ProcessEvent(FileSystemEventArgs fileSystemEventArgs, ActionConfig actionConfig)
         {
             Console.WriteLine("[{0}] Command: {1}", fileSystemEventArgs.ChangeType, actionConfig.Command);
-            var processStartInfo = new ProcessStartInfo(actionConfig.Command);
+            var processStartInfo = new ProcessStartInfo(actionConfig.Command)
+            {
+                WorkingDirectory = new FileInfo(actionConfig.Command).DirectoryName
+            };
             Process.Start(processStartInfo);
         }
     }
