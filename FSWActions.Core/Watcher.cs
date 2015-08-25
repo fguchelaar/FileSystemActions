@@ -33,28 +33,34 @@ namespace FSWActions.Core
                 if (string.Equals(actionConfig.Event, "onCreated"))
                 {
                     FileSystemWatcher.Created +=
-                        (sender, args) => Debounce(args.FullPath, delegate { ProcessEvent(args, config); });
+                        (sender, args) => Debounce(DebounceKeyForArgs(args), delegate { ProcessEvent(args, config); });
                 }
                 else if (string.Equals(actionConfig.Event, "onChanged"))
                 {
                     FileSystemWatcher.Changed +=
-                        (sender, args) => Debounce(args.FullPath, delegate { ProcessEvent(args, config); });
+                        (sender, args) => Debounce(DebounceKeyForArgs(args), delegate { ProcessEvent(args, config); });
                 }
                 else if (string.Equals(actionConfig.Event, "onRenamed"))
                 {
                     FileSystemWatcher.Renamed +=
-                        (sender, args) => Debounce(args.FullPath, delegate { ProcessRenamedEvent(args, config); });
+                        (sender, args) => Debounce(DebounceKeyForArgs(args), delegate { ProcessRenamedEvent(args, config); });
                 }
                 else if (string.Equals(actionConfig.Event, "onDeleted"))
                 {
                     FileSystemWatcher.Deleted +=
-                        (sender, args) => Debounce(args.FullPath, delegate { ProcessEvent(args, config); });
+                        (sender, args) => Debounce(DebounceKeyForArgs(args), delegate { ProcessEvent(args, config); });
                 }
             }
 
             FileSystemWatcher.EnableRaisingEvents = true;
-            Console.WriteLine("Started watching '{0}'{1}", Config.Path,
-                Config.Timeout != 0 ? string.Format(" timeout={0}", Config.Timeout) : string.Empty);
+            Console.WriteLine("Started watching '{0}'{1}{2}", Config.Path,
+                Config.Timeout != 0 ? string.Format(" timeout={0}", Config.Timeout) : string.Empty,
+                Config.DebounceOnFolder ? " debounce on folder" : string.Empty);
+        }
+
+        private string DebounceKeyForArgs(FileSystemEventArgs args)
+        {
+            return Config.DebounceOnFolder ? new FileInfo(args.FullPath).DirectoryName : args.FullPath;
         }
 
         public void StopWatching()

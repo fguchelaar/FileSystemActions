@@ -23,11 +23,17 @@ Provides a configurable Windows Service leveraging the FileSystemWatcher, to per
     <action event="onRenamed" command="onRenamed.bat" />
     <action event="onDeleted" command="onDeleted.bat" />
   </watcher>
+  <watcher path="c:\Temp" filter="readme.*" timeout="5000" debounceOnFolder="true">
+    <action event="onRenamed" command="onRenamed.bat" />
+    <action event="onDeleted" command="onDeleted.bat" />
+  </watcher>
 </watchers>
 ```
 
 When using the (optional) `timeout` attribute, the actions will not get called multiple times if an event occurs within that timeframe. 
 Calls to the action are "debounced". The value is in milliseconds.
+
+When the (optional) 'debounceOnFolder' attribute is used, the folder-name is used for debouncing, instead of the filename.
 
 ##Valid event values
 ```

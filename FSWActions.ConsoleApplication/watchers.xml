@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <watchers>
-  <watcher path="c:\Temp" filter="readme.*">
+  <watcher path="c:\Temp" filter="readme.*" timeout="5000" debounceOnFolder="true">
     <action event="onChanged" command="c:\Temp\toTouch.bat" />
   </watcher>
 </watchers>

@@ -14,6 +14,9 @@ namespace FSWActions.Core.Config
         [XmlAttribute("timeout")]
         public int Timeout { get; set; }
 
+        [XmlAttribute("debounceOnFolder")]
+        public bool DebounceOnFolder { get; set; }
+    
         [XmlElement("action")]
         public ActionConfigCollection ActionsConfig { get; set; }
     }
