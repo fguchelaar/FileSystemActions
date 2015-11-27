@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.IO;
 using FSWActions.Core;
 using FSWActions.Core.Config;
 
@@ -10,9 +12,49 @@ namespace FSWActions.ConsoleApplication
         private static void Main(string[] args)
         {
             var configuration = WatchersConfiguration.LoadConfigFromPath("watchers.xml");
-            var watchers = new List<Watcher>(configuration.Watchers.Count);
 
-            foreach (var watcherConfig in configuration.Watchers)
+            if (ValidateWatchers(configuration.Watchers))
+            {
+                StartWatching(configuration.Watchers);
+            }
+        }
+
+        private static bool ValidateWatchers(Collection<WatcherConfig> watchers)
+        {
+            bool valid = true;
+            foreach (var watcherConfig in watchers)
+            {
+                if (!Directory.Exists(watcherConfig.Path))
+                {
+                    valid = false;
+                    Console.WriteLine("Watcher path not found: {0}", watcherConfig.Path);
+                }
+
+                foreach (var action in watcherConfig.ActionsConfig)
+                {
+                    if (!File.Exists(action.Command))
+                    {
+                        valid = false;
+                        Console.WriteLine("Action command not found: {0}", action.Command);
+                    }
+                }
+            }
+
+            if (!valid)
+            {
+                // Wait for the user to quit the program.
+                Console.WriteLine("\n\nPress any key to continue\n");
+                Console.ReadKey(true);
+            }
+
+            return valid;
+        }
+
+        private static void StartWatching(Collection<WatcherConfig> watchers)
+        {
+            var listOfWatchers = new List<Watcher>(watchers.Count);
+
+            foreach (var watcherConfig in watchers)
             {
                 foreach (var action in watcherConfig.ActionsConfig)
                 {
@@ -20,7 +62,7 @@ namespace FSWActions.ConsoleApplication
                         action.Command);
                 }
                 var watcher = new Watcher(watcherConfig);
-                watchers.Add(watcher);
+                listOfWatchers.Add(watcher);
                 watcher.StartWatching();
             }
 
@@ -29,7 +71,7 @@ namespace FSWActions.ConsoleApplication
             while (Console.Read() != 'q') ;
 
             // Stop all watchers, not really necessary though...
-            foreach (var watcher in watchers)
+            foreach (var watcher in listOfWatchers)
             {
                 watcher.StopWatching();
             }
