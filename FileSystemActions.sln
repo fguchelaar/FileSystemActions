@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSWActions.ConsoleApplication", "FSWActions.ConsoleApplication\FSWActions.ConsoleApplication.csproj", "{CE579EC8-40A7-4DC8-9F79-1D13EF50517B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSWActions.WindowsService", "FSWActions.WindowsService\FSWActions.WindowsService.csproj", "{4EA6E402-E559-4079-AFBB-0D3DB3EFF5EC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FSWActions.Core", "FSWActions.Core\FSWActions.Core.csproj", "{ED69DD82-BE9F-4F43-A3DA-5E9164623D0F}"
 EndProject
 Global
@@ -25,10 +23,6 @@ Global
 		{CE579EC8-40A7-4DC8-9F79-1D13EF50517B}.Debug|Any CPU.Build.0 = Release|Any CPU
 		{CE579EC8-40A7-4DC8-9F79-1D13EF50517B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE579EC8-40A7-4DC8-9F79-1D13EF50517B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4EA6E402-E559-4079-AFBB-0D3DB3EFF5EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4EA6E402-E559-4079-AFBB-0D3DB3EFF5EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4EA6E402-E559-4079-AFBB-0D3DB3EFF5EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4EA6E402-E559-4079-AFBB-0D3DB3EFF5EC}.Release|Any CPU.Build.0 = Release|Any CPU
 		{ED69DD82-BE9F-4F43-A3DA-5E9164623D0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{ED69DD82-BE9F-4F43-A3DA-5E9164623D0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ED69DD82-BE9F-4F43-A3DA-5E9164623D0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
