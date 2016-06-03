@@ -50,6 +50,12 @@ namespace FSWActions.Core
                     FileSystemWatcher.Deleted +=
                         (sender, args) => Debounce(DebounceKeyForArgs(args), delegate { ProcessEvent(args, config); });
                 }
+
+                if (actionConfig.RunOnStartup)
+                {
+                    Console.WriteLine("Run on startup: {0}", actionConfig.Command);
+                    RunAction(actionConfig);
+                }
             }
 
             FileSystemWatcher.EnableRaisingEvents = true;
@@ -98,16 +104,17 @@ namespace FSWActions.Core
         {
             Console.WriteLine("[{0}] Command: {1}", renamedEventArgs.ChangeType, actionConfig.Command);
 
-            var processStartInfo = new ProcessStartInfo(actionConfig.Command)
-            {
-                WorkingDirectory = new FileInfo(actionConfig.Command).DirectoryName
-            };
-            Process.Start(processStartInfo);
+            RunAction(actionConfig);
         }
 
         private void ProcessEvent(FileSystemEventArgs fileSystemEventArgs, ActionConfig actionConfig)
         {
             Console.WriteLine("[{0}] Command: {1}", fileSystemEventArgs.ChangeType, actionConfig.Command);
+            RunAction(actionConfig);
+        }
+
+        private static void RunAction(ActionConfig actionConfig)
+        {
             var processStartInfo = new ProcessStartInfo(actionConfig.Command)
             {
                 WorkingDirectory = new FileInfo(actionConfig.Command).DirectoryName

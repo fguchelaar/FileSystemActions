@@ -9,5 +9,8 @@ namespace FSWActions.Core.Config
 
         [XmlAttribute("command")]
         public string Command { get; set; }
+
+        [XmlAttribute("runOnStartup")]
+        public bool RunOnStartup { get; set; }
     }
 }
