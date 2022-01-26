@@ -3,7 +3,7 @@ FileSystemActions
 
 Provides a configurable Windows Service leveraging the FileSystemWatcher, to perform actions when a directory or file is created, changed, renamed or deleted.
 
-#Configuration example
+# Configuration example
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -38,7 +38,7 @@ When the (optional) `debounceOnFolder` attribute is used, the folder-name is use
 The optional attribute `runOnStartup` can be used to run the associated action once, when the watcher is started. This can be helpful when
 you have commands registered that run when a file is created in a folder, but when such a file already exists on start up.
 
-##Valid event values
+## Valid event values
 ```
 onCreated
 onChanged
